@@ -1,0 +1,33 @@
+    ***Machine virtuelle ubuntu***
+-sudo apt update
+-sudo apt install openssh-server slick-greeter
+-sudo apt install x11vnc 
+-sudo apt dist-upgrade 
+    ***CMD Windows 10***
+-ssh kiosk@adresse-ip 
+-sudo nano /etc/lightdm/lightdm.conf 
+    [SeatDefaults]
+    autologin-user=kiosk
+    autologin-user-timeout=0
+    user-session=ubuntu
+    greeter-session=unity-greeter
+-sudo nano /etc/lightdm/lightdm.conf.d/50-myconfig.conf
+    [SeatDefaults]
+    autologin-user=kiosk
+-sudo mkdir /home/kiosk/.config/autostart
+-sudo nano /home/kiosk/.config/autostart/kiosk.desktop
+    [Desktop Entry]
+    Type=Application
+    Name=kiosk
+    Exec=/home/kiosk/kiosk.sh 
+    X-GNOME-Autostart-enabled=true
+-sudo nano /home/kiosk/kiosk.sh
+    #!/bin/bash
+    export DISPLAY=:0
+    /usr/bin/x11vnc -create -xkb -noxrecord -noxfixes -noxdamage -display :0 -auth /var/run/lightdm/root/:0 -rfbauth /home/kiosk/.x11vnc.pass -forever -rfbport 5905 &
+    sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/kiosk/.mozilla/firefox/*.default-release/prefs.js
+    sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/kiosk/.mozilla/firefox/*.default-release/prefs.js
+    /usr/bin/firefox --kiosk http://bing.com &
+-sudo chmod +x /home/kiosk/kiosk.sh
+-x11vnc -storepasswd $password .x11vnc.pass
+-sudo reboot
